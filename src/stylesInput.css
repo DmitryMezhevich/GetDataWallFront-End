@@ -1,0 +1,33 @@
+/* styleInput.css */
+
+.input-file {
+    margin-bottom: 20px;
+    display: none; /* Скрываем нативный input */
+  }
+  
+  .custom-input-file {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+  }
+  
+  .custom-input-file:hover {
+    background-color: #2980b9;
+  }
+  
+  .custom-input-file:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+  
+  .custom-input-file-label {
+    display: inline-block;
+    cursor: pointer;
+  }
