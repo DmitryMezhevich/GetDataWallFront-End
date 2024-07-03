@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import './styles.css'; // импорт стилей
-import './stylesInput.css'; // импорт стилей
-import './MyForm.css';
+import './MyForm.css'; // Импорт стилей для формы
+import './styles.css'; // Импорт общих стилей
 
 const MyForm = () => {
     const [noLessReposts, setNoLessReposts] = useState('');
@@ -12,15 +11,34 @@ const MyForm = () => {
     const [endDate, setEndDate] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formMessage, setFormMessage] = useState('');
+    const [items, setItems] = useState([]);
+    const [allChecked, setAllChecked] = useState(true);
 
     useEffect(() => {
         const now = moment().format('YYYY-MM-DDTHH:mm'); // Форматируем дату для input type="datetime-local"
         setStartDate(now);
         setEndDate(now);
+
+        // Fetch items from the server
+        axios
+            .get(
+                'https://getdatawallsandals-1.onrender.com/wall-api/getListPlaces'
+            )
+            .then((response) => {
+                // Предполагаем, что response.data это массив объектов, каждый из которых имеет свойства id и text
+                const fetchedItems = response.data.map((item) => ({
+                    ...item,
+                    checked: true,
+                }));
+                setItems(fetchedItems);
+            })
+            .catch((error) => {
+                console.error('Error fetching items:', error);
+            });
     }, []);
 
     const formatDateTime = (dateTime) => {
-        return moment(dateTime).unix(); // Форматируем дату в заданный формат
+        return moment(dateTime).unix(); // Преобразуем дату в Unix timestamp
     };
 
     const handleSubmit = (event) => {
@@ -36,12 +54,16 @@ const MyForm = () => {
         const formattedStartDate = formatDateTime(startDate);
         const formattedEndDate = formatDateTime(endDate);
 
+        // Collect selected items
+        const selectedPlaces = items.filter((item) => item.checked);
+
         // Create the data object
         const data = {
             noLessReposts,
             noMoreReposts,
             startDate: formattedStartDate,
             endDate: formattedEndDate,
+            selectedPlaces: selectedPlaces.map((item) => item.text),
         };
 
         // Set submitting state and clear any previous message
@@ -51,7 +73,7 @@ const MyForm = () => {
         // Send the data to the server
         axios
             .post(
-                'https://getdatawallsandalssize.onrender.com/wall-api/get',
+                'https://getdatawallsandals-1.onrender.com/wall-api/get',
                 data,
                 {
                     headers: { 'Content-Type': 'application/json' },
@@ -67,6 +89,22 @@ const MyForm = () => {
             .finally(() => {
                 setIsSubmitting(false);
             });
+    };
+
+    const handleCheckboxChange = (index) => {
+        const newItems = [...items];
+        newItems[index].checked = !newItems[index].checked;
+        setItems(newItems);
+    };
+
+    const handleToggleAll = () => {
+        const newCheckedState = !allChecked;
+        const newItems = items.map((item) => ({
+            ...item,
+            checked: newCheckedState,
+        }));
+        setItems(newItems);
+        setAllChecked(newCheckedState);
     };
 
     return (
@@ -128,6 +166,27 @@ const MyForm = () => {
                     {formMessage}
                 </div>
             )}
+
+            <div className="checkbox-container">
+                {items.map((item, index) => (
+                    <div key={item.id} className="checkbox-item">
+                        <input
+                            type="checkbox"
+                            checked={item.checked}
+                            onChange={() => handleCheckboxChange(index)}
+                        />
+                        <span style={{ color: '#333' }}>{item.text}</span>
+                    </div>
+                ))}
+            </div>
+
+            <button
+                type="button"
+                onClick={handleToggleAll}
+                className="toggle-button"
+            >
+                {allChecked ? 'Снять выделение' : 'Выделить все'}
+            </button>
         </form>
     );
 };
