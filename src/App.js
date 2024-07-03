@@ -22,7 +22,7 @@ const MyForm = () => {
         // Fetch items from the server
         axios
             .get(
-                'https://getdatawallsandals-1.onrender.com/wall-api/getListPlaces'
+                'https://getdatawallsandalssize.onrender.com/wall-api/getListPlaces'
             )
             .then((response) => {
                 // Предполагаем, что response.data это массив объектов, каждый из которых имеет свойства id и text
@@ -73,7 +73,7 @@ const MyForm = () => {
         // Send the data to the server
         axios
             .post(
-                'https://getdatawallsandals-1.onrender.com/wall-api/get',
+                'https://getdatawallsandalssize.onrender.com/wall-api/get',
                 data,
                 {
                     headers: { 'Content-Type': 'application/json' },
