@@ -80,7 +80,10 @@ const MyForm = () => {
                 }
             )
             .then((res) => {
-                setFormMessage('Данные успешно отправлены!');
+                const item = res.data;
+                setFormMessage(
+                    `Успешно! Есть размеры: ${item.count.size}. Нету размеров: ${item.count.notSize}`
+                );
             })
             .catch((error) => {
                 setFormMessage('Произошла ошибка при отправке данных.');
@@ -160,7 +163,7 @@ const MyForm = () => {
             {formMessage && (
                 <div
                     className={`form-message ${
-                        formMessage.includes('успешно') ? 'success' : 'error'
+                        formMessage.includes('Успешно') ? 'success' : 'error'
                     }`}
                 >
                     {formMessage}
